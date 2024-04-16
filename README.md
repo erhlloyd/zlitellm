@@ -1,5 +1,5 @@
 <h1 align="center">
-        🚅 LiteLLM
+        🚅 (z)LiteLLM
     </h1>
     <p align="center">
         <p align="center">Call all LLM APIs using the OpenAI format [Bedrock, Huggingface, VertexAI, TogetherAI, Azure, OpenAI, etc.]
