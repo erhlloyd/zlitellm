@@ -12,10 +12,13 @@ import {
   Metric,
   Text,
   Grid,
+  Accordion,
+  AccordionHeader,
+  AccordionBody,
 } from "@tremor/react";
 import { TabPanel, TabPanels, TabGroup, TabList, Tab, TextInput, Icon } from "@tremor/react";
 import { Select, SelectItem, MultiSelect, MultiSelectItem } from "@tremor/react";
-import { modelInfoCall, userGetRequesedtModelsCall, modelMetricsCall, modelCreateCall, Model, modelCostMap, modelDeleteCall, healthCheckCall } from "./networking";
+import { modelInfoCall, userGetRequesedtModelsCall, modelCreateCall, Model, modelCostMap, modelDeleteCall, healthCheckCall } from "./networking";
 import { BarChart } from "@tremor/react";
 import {
   Button as Button2,
@@ -78,7 +81,6 @@ const ModelDashboard: React.FC<ModelDashboardProps> = ({
   userID,
 }) => {
   const [modelData, setModelData] = useState<any>({ data: [] });
-  const [modelMetrics, setModelMetrics] = useState<any[]>([]);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [form] = Form.useForm();
   const [modelMap, setModelMap] = useState<any>(null);
@@ -136,14 +138,7 @@ const ModelDashboard: React.FC<ModelDashboardProps> = ({
         console.log("Model data response:", modelDataResponse.data);
         setModelData(modelDataResponse);
 
-        const modelMetricsResponse = await modelMetricsCall(
-          accessToken,
-          userID,
-          userRole
-        );
-
-        console.log("Model metrics response:", modelMetricsResponse);
-        setModelMetrics(modelMetricsResponse);
+       
 
         // if userRole is Admin, show the pending requests
         if (userRole === "Admin" && accessToken) {
@@ -228,7 +223,6 @@ const ModelDashboard: React.FC<ModelDashboardProps> = ({
       max_tokens = model_info?.max_tokens;
     }
 
-    // let cleanedLitellmParams == litellm_params without model, api_base
     if (curr_model?.litellm_params) {
       cleanedLitellmParams = Object.fromEntries(
         Object.entries(curr_model?.litellm_params).filter(
@@ -468,9 +462,18 @@ const ModelDashboard: React.FC<ModelDashboardProps> = ({
                   }
 
                   <TableCell>
-                    <pre>
+
+                <Accordion>
+                  <AccordionHeader>
+                    <Text>Litellm params</Text>
+                  </AccordionHeader>
+                  <AccordionBody>
+                  <pre>
                     {JSON.stringify(model.cleanedLitellmParams, null, 2)}
                     </pre>
+                  </AccordionBody>
+                </Accordion>
+                   
                   </TableCell>
 
                   <TableCell>{model.input_cost}</TableCell>
@@ -484,30 +487,7 @@ const ModelDashboard: React.FC<ModelDashboardProps> = ({
             </TableBody>
           </Table>
         </Card>
-        <Card>
-          <Title>Model Statistics (Number Requests)</Title>
-              <BarChart
-                data={modelMetrics}
-                index="model"
-                categories={["num_requests"]}
-                colors={["blue"]}
-                yAxisWidth={400}
-                layout="vertical"
-                tickGap={5}
-              />
-        </Card>
-        <Card>
-          <Title>Model Statistics (Latency)</Title>
-              <BarChart
-                data={modelMetrics}
-                index="model"
-                categories={["avg_latency_seconds"]}
-                colors={["red"]}
-                yAxisWidth={400}
-                layout="vertical"
-                tickGap={5}
-              />
-        </Card>
+
       </Grid>
       </TabPanel>
       <TabPanel className="h-full">

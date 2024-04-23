@@ -158,7 +158,7 @@ export const keyCreateCall = async (
 
 export const userCreateCall = async (
   accessToken: string,
-  userID: string,
+  userID: string | null,
   formValues: Record<string, any> // Assuming formValues is an object
 ) => {
   try {
@@ -294,6 +294,9 @@ export const userInfoCall = async (
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/user/info` : `/user/info`;
     if (userRole == "App Owner" && userID) {
+      url = `${url}?user_id=${userID}`;
+    }
+    if (userRole == "App User" && userID) {
       url = `${url}?user_id=${userID}`;
     }
     console.log("in userInfoCall viewAll=", viewAll);
